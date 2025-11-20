@@ -1,16 +1,16 @@
 import java.util.*;
 
 public class Main {
-    private Game myGame;
-    private HashMap<String, List<Integer>> traceMap;
+    private static Game myGame;
+    private static HashMap<String, List<Integer>> traceMap;
 
-    public void main(String[] args) {
+    public static void main(String[] args) {
         myGame = new Game();
-//        testTrace("doublePlay");
+//        testTrace("wrongWinner2");
         menu();
     }
 
-    private void testTrace(String traceID) {
+    private static void testTrace(String traceID) {
         setupTraces();
         myGame.reset();
         List<Integer> trace = traceMap.get(traceID);
@@ -19,7 +19,7 @@ public class Main {
             myGame.play(loc, false);
         }
     }
-    private void setupTraces() {
+    private static void setupTraces() {
         traceMap = new HashMap<>();
         List<Integer> allDirections =
                 new ArrayList<>(Arrays.asList(3,4,3,4,3,3,2,3,2,3,2,3));
@@ -37,6 +37,8 @@ public class Main {
                 new ArrayList<>(Arrays.asList(0,1,0,1,2,2,2,3,3,3,0,0,4,5,4));
         List<Integer> doublePlay =
                 new ArrayList<>(Arrays.asList(0,3,0,3,0,1,2));
+        List<Integer> wrongWinner2 =
+                new ArrayList<>(Arrays.asList(3,2,1,2,1,3,1,3,1,2,1,0,1));
 
         traceMap.put("allDirections", allDirections);
         traceMap.put("middleTower", middleTower);
@@ -46,9 +48,10 @@ public class Main {
         traceMap.put("wrongWinner", wrongWinner);
         traceMap.put("twoWinners", twoWinners);
         traceMap.put("doublePlay", doublePlay);
+        traceMap.put("wrongWinner2", wrongWinner2);
     }
 
-    private void menu() {
+    private static void menu() {
         Scanner scanner = new Scanner(System.in);
         int menuSelect;
 
@@ -73,11 +76,14 @@ public class Main {
         } else if (menuSelect == 1) {
             bot();
         } else if (menuSelect == 2) {
+            scanner.close();
             return;
         }
+        scanner.close();
+
     }
 
-    private void gameLoop() {
+    private static void gameLoop() {
         int index;
         Scanner scanner = new Scanner(System.in);
         myGame.reset();
@@ -131,9 +137,10 @@ public class Main {
                 myGame.play(index, false);
             }
         }
+        scanner.close();
     }
 
-    private void bot() {
+    private static void bot() {
         Scanner scanner = new Scanner(System.in);
         int playerTurn = -1;
 
@@ -183,5 +190,6 @@ public class Main {
                 playerTurn = 1;
             }
         }
+        
     }
 }

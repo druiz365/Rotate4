@@ -91,7 +91,7 @@ public class Game {
             playMap.put(curWidth, curDepth + 1);
         }
 
-        return checkState(curWidth, curDepth);
+        return checkState(curWidth, curDepth, true);
     }
 
     private Boolean playDepth(int curDepth) {
@@ -108,53 +108,10 @@ public class Game {
             playMap.put(curDepth, curWidth + 1);
         }
 
-        return checkState(curWidth, curDepth);
+        return checkState(curWidth, curDepth, true);
     }
-    private Boolean checkState(int curWidth, int curDepth) {
+    private Boolean checkState(int curWidth, int curDepth, boolean shouldRotate) {
 
-        int NWsum = checkDirectional(curWidth - 1, curDepth - 1, "NW")
-                + checkDirectional(curWidth + 1, curDepth + 1, "SE") + 1;
-
-        int NEsum = checkDirectional(curWidth + 1, curDepth - 1, "NE")
-                + checkDirectional(curWidth - 1, curDepth + 1, "SW") + 1;
-
-        int Wsum = checkDirectional(curWidth - 1, curDepth, "W")
-                + checkDirectional(curWidth + 1, curDepth, "E") + 1;
-
-        int Ssum = checkDirectional(curWidth, curDepth + 1, "S")
-                + checkDirectional(curWidth, curDepth - 1, "N") + 1;
-
-        if (NWsum >= 4 || NEsum >= 4 || Wsum >= 4 || Ssum >= 4) {
-            return isPlayer1;
-        } else if (NWsum == 3 || NEsum == 3 || Wsum == 3 || Ssum == 3) {
-            rotate();
-            ArrayList<Boolean> winners = new ArrayList<>(2);
-            for (int w = 0; w < BOARD_WIDTH; w++) {
-                Boolean result =  checkWinState(w, 2);
-                if (result != null && !winners.contains(result)) {
-                    winners.add(result);
-                }
-                if (winners.size() == 2) {
-                    return !isPlayer1;
-                }
-            }
-             // Need to track current location.
-            for (int d = 0; d < BOARD_DEPTH; d++) {
-                Boolean result =  checkWinState(3, d);
-                if (result != null && !winners.contains(result)) {
-                    winners.add(result);
-                }
-                if (winners.size() == 2) {
-                    return !isPlayer1;
-                }
-            }
-            return (winners.isEmpty()) ? null : winners.getFirst();
-        }
-        return null;
-    }
-
-    private Boolean checkWinState(int curWidth, int curDepth) {
-        
         int NWsum = checkDirectional(curWidth - 1, curDepth - 1, "NW")
                 + checkDirectional(curWidth + 1, curDepth + 1, "SE") + 1;
 
@@ -169,9 +126,52 @@ public class Game {
 
         if (NWsum >= 4 || NEsum >= 4 || Wsum >= 4 || Ssum >= 4) {
             return board[curWidth][curDepth];
+        } else if (shouldRotate && (NWsum == 3 || NEsum == 3 || Wsum == 3 || Ssum == 3)) {
+            rotate();
+            ArrayList<Boolean> winners = new ArrayList<>(2);
+            for (int w = 0; w < BOARD_WIDTH; w++) {
+                Boolean result =  checkState(w, 2, false);
+                if (result != null && !winners.contains(result)) {
+                    winners.add(result);
+                }
+                if (winners.size() == 2) {
+                    return !isPlayer1;
+                }
+            }
+             // Need to track current location.
+            for (int d = 0; d < BOARD_DEPTH; d++) {
+                Boolean result =  checkState(3, d, false);
+                if (result != null && !winners.contains(result)) {
+                    winners.add(result);
+                }
+                if (winners.size() == 2) {
+                    return !isPlayer1;
+                }
+            }
+            return (winners.isEmpty()) ? null : winners.getFirst();
         }
         return null;
     }
+
+//    private Boolean checkWinState(int curWidth, int curDepth) {
+//
+//        int NWsum = checkDirectional(curWidth - 1, curDepth - 1, "NW")
+//                + checkDirectional(curWidth + 1, curDepth + 1, "SE") + 1;
+//
+//        int NEsum = checkDirectional(curWidth + 1, curDepth - 1, "NE")
+//                + checkDirectional(curWidth - 1, curDepth + 1, "SW") + 1;
+//
+//        int Wsum = checkDirectional(curWidth - 1, curDepth, "W")
+//                + checkDirectional(curWidth + 1, curDepth, "E") + 1;
+//
+//        int Ssum = checkDirectional(curWidth, curDepth + 1, "S")
+//                + checkDirectional(curWidth, curDepth - 1, "N") + 1;
+//
+//        if (NWsum >= 4 || NEsum >= 4 || Wsum >= 4 || Ssum >= 4) {
+//            return board[curWidth][curDepth];
+//        }
+//        return null;
+//    }
 
     private void rotate() {
         changeGravity();
